@@ -1,0 +1,522 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.intellective.uie</groupId>
+	<artifactId>uie-performance-test</artifactId>
+	<version>1.0.0-RC1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>uie-performance-test</name>
+	<url>http://www.intellective.com</url>
+
+	<organization>
+		<name>Intellective</name>
+		<url>http://www.intellective.com</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>@Copyright Intellective, 2018</name>
+			<url>http://www.intellective.com</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>esmirnov</id>
+			<name>Eugene Smirnov</name>
+			<email>esmirnov@vegaecm.com</email>
+				<url>http://www.vegaecm.com</url>
+				<organization>Vega ECM Solutions</organization>
+				<organizationUrl>http://www.vegaecm.com</organizationUrl>
+				<roles>
+					<role>developer</role>
+				</roles>
+				<timezone>Russia/Moscow</timezone>
+				<properties>
+					<picUrl>http://www.vegaecm.com/personel/esmirnov/pic</picUrl>
+				</properties>
+		</developer>
+		<developer>
+			<id>aminin</id>
+			<name>Andrei Minin</name>
+			<email>aminin@vegaecm.com</email>
+				<url>http://www.vegaecm.com</url>
+				<organization>Vega ECM Solutions</organization>
+				<organizationUrl>http://www.vegaecm.com</organizationUrl>
+				<roles>
+					<role>developer</role>
+				</roles>
+				<timezone>Canada/Toronto</timezone>
+				<properties>
+					<picUrl>http://www.vegaecm.com/personel/aminin/pic</picUrl>
+				</properties>
+		</developer>
+		<developer>
+			<id>akornev</id>
+			<name>Alexey Kornev</name>
+			<email>akornev@vegaecm.com</email>
+				<url>http://www.vegaecm.com</url>
+				<organization>Vega ECM Solutions</organization>
+				<organizationUrl>http://www.vegaecm.com</organizationUrl>
+				<roles>
+					<role>developer</role>
+				</roles>
+				<timezone>Russia/Moscow</timezone>
+				<properties>
+					<picUrl>http://www.vegaecm.com/personel/akornev/pic</picUrl>
+				</properties>
+		</developer>
+		<!-- Add more developers  -->
+	</developers>
+	
+	<issueManagement>
+    	<system>Atlassian Jira</system>
+    	<url>http://w3.vega.us.com:8081/browse/VU</url>
+  	</issueManagement>
+
+	<properties>
+		<slf4j.version>1.7.25</slf4j.version>
+		<logback.version>1.1.8</logback.version>
+		<!-- Used to locate the profile specific configuration file. -->
+		<build.profile.id>dev</build.profile.id>
+		<jacoco.it.execution.data.file>${project.build.directory}/coverage-reports/jacoco-it.exec</jacoco.it.execution.data.file>
+		<jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
+		<jdk.version>1.7</jdk.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<protobuf.version>3.10.0</protobuf.version>
+		<!-- Only unit tests are run by default. -->
+		<skip.integration.tests>true</skip.integration.tests>
+		<skip.unit.tests>false</skip.unit.tests>
+	</properties>
+
+	<build>
+		<finalName>${project.artifactId}-${project.version}</finalName>
+		<filters>
+			<filter>profiles/${build.profile.id}/config.properties</filter>
+		</filters>
+		<resources>
+			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>logback.xml</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<extensions>
+			<extension>
+				<groupId>kr.motd.maven</groupId>
+				<artifactId>os-maven-plugin</artifactId>
+				<version>1.6.2</version>
+			</extension>
+		</extensions>
+
+		<plugins>
+			<plugin>
+				<groupId>org.xolstice.maven.plugins</groupId>
+				<artifactId>protobuf-maven-plugin</artifactId>
+				<version>0.6.1</version>
+				<configuration>
+					<protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
+					<pluginId>grpc-java</pluginId>
+					<pluginArtifact>io.grpc:protoc-gen-grpc-java:1.25.0:exe:${os.detected.classifier}</pluginArtifact>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+							<goal>compile-custom</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Used to add source directories to our build. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<!-- States that the plugin's add-test-source goal is executed at generate-test-sources 
+						phase. -->
+					<execution>
+						<id>add-integration-test-sources</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<!-- Configures the source directory of integration tests. -->
+							<sources>
+								<source>src/integration-test/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>8</source>
+					<target>8</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.9</version>
+				<executions>
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+						is passed as VM argument when Maven the Surefire plugin is executed. -->
+					<execution>
+						<id>pre-unit-test</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${jacoco.ut.execution.data.file}</destFile>
+							<!-- Sets the name of the property containing the settings for JaCoCo 
+								runtime agent. -->
+							<propertyName>surefireArgLine</propertyName>
+						</configuration>
+					</execution>
+					<!-- Ensures that the code coverage report for unit tests is created 
+						after unit tests have been run. -->
+					<execution>
+						<id>post-unit-test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${jacoco.ut.execution.data.file}</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+						</configuration>
+					</execution>
+					<!-- Prepares the property pointing to the JaCoCo runtime agent which 
+						is passed as VM argument when Maven the Failsafe plugin is executed. -->
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<destFile>${jacoco.it.execution.data.file}</destFile>
+							<!-- Sets the name of the property containing the settings for JaCoCo 
+								runtime agent. -->
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<!-- Ensures that the code coverage report for integration tests after 
+						integration tests have been run. -->
+					<execution>
+						<id>post-integration-test</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the path to the file which contains the execution data. -->
+							<dataFile>${jacoco.it.execution.data.file}</dataFile>
+							<!-- Sets the output directory for the code coverage report. -->
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Used for unit tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.1</version>
+				<configuration>
+					<!-- Sets the VM argument line used when unit tests are run. -->
+					<argLine>${surefireArgLine}</argLine>
+					<!-- Skips unit tests if the value of skip.unit.tests property is true -->
+					<skipTests>${skip.unit.tests}</skipTests>
+					<!-- Excludes integration tests when unit tests are run. -->
+					<excludes>
+						<exclude>**/IT*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<!-- Used for integration tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.20</version>
+				<executions>
+					<!-- Ensures that both integration-test and verify goals of the Failsafe 
+						Maven plugin are executed. -->
+					<execution>
+						<id>integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<!-- Sets the VM argument line used when integration tests are run. -->
+							<argLine>${failsafeArgLine}</argLine>
+
+							<!-- Skips integration tests if the value of skip.integration.tests 
+								property is true -->
+							<skipTests>${skip.integration.tests}</skipTests>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>copy-jar-and-scripts</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.intellective.uie</groupId>
+									<artifactId>uie-performance-test</artifactId>
+									<version>${project.version}</version>
+									<type>jar</type>
+									<outputDirectory>${project.build.directory}/</outputDirectory>
+									<destFileName>uie-test.jar</destFileName>
+								</artifactItem>
+							</artifactItems>
+							<overWriteReleases>true</overWriteReleases>
+							<overWriteSnapshots>true</overWriteSnapshots>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.intellective.uie.test.PerformanceTest</mainClass>
+								</transformer>
+							</transformers>
+							<finalName>uie-performance-test</finalName>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>zip distro</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<appendAssemblyId>false</appendAssemblyId>
+							<attach>false</attach>
+							<outputDirectory>${basedir}/release</outputDirectory>
+							<finalName>uie-performance-test-${project.version}</finalName>
+							<descriptors>
+								<descriptor>src/main/assembly/distribution-assembly.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>all-tests</id>
+			<properties>
+				<build.profile.id>all-tests</build.profile.id>
+				<!-- All tests are run. -->
+				<skip.integration.tests>false</skip.integration.tests>
+				<skip.unit.tests>false</skip.unit.tests>
+			</properties>
+		</profile>
+		<profile>
+			<id>dev</id>
+		</profile>
+		<profile>
+			<id>integration-test</id>
+			<properties>
+				<!-- Used to locate the profile specific configuration file. -->
+				<build.profile.id>integration-test</build.profile.id>
+				<!-- Only integration tests are run. -->
+				<skip.integration.tests>false</skip.integration.tests>
+				<skip.unit.tests>true</skip.unit.tests>
+			</properties>
+		</profile>
+		<profile>
+			<!-- no tests development profile - for quick prototyping and debugging 
+				MUST BE NOT USED by default -->
+			<id>dev-no-tests</id>
+			<properties>
+				<build.profile.id>all-tests</build.profile.id>
+				<!-- All tests are run. -->
+				<skip.integration.tests>true</skip.integration.tests>
+				<skip.unit.tests>true</skip.unit.tests>
+			</properties>
+		</profile>
+	</profiles>
+
+	<repositories>
+		<repository>
+			<id>vegaecm-thirdparty-repo</id>
+			<url>https://nexus.vegaecm.com/content/repositories/thirdparty</url>
+			<releases>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>vegaecm-central-repo</id>
+			<url>https://nexus.vegaecm.com/content/repositories/central</url>
+			<releases>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>product-releases-repo</id>
+			<url>https://nexus.vegaecm.com/content/repositories/Product.Releases</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+		</repository>
+		<repository>
+			<id>product-snapshots-repo</id>
+			<url>https://nexus.vegaecm.com/content/repositories/Product.Snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>central</id>
+			<url>https://nexus.vegaecm.com/content/repositories/central</url>
+			<releases>
+				<enabled>true</enabled>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<snapshots>
+				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+
+	<!-- Nexus deployment configuration -->
+	<distributionManagement>
+		<repository>
+			<id>product-releases-repo</id>
+			<name>Internal Releases</name>
+			<url>https://nexus.vegaecm.com/content/repositories/Product.Releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>product-snapshots-repo</id>
+			<name>Internal Snapshots</name>
+			<url>https://nexus.vegaecm.com/content/repositories/Product.Snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+	   <!--  test scope libs  -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.intellective.uie.index</groupId>
+			<artifactId>uie-search-client</artifactId>
+			<version>7.6.0.1</version>
+		</dependency>
+	</dependencies>
+
+</project>

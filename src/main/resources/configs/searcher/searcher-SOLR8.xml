@@ -1,0 +1,64 @@
+<SearcherConfiguration>
+    <IndexGroups>
+        <IndexGroup ID="Dummy">
+            <IndexManager>
+                <Properties>
+                    <!-- SOLR core URL, for example SODemo core URL: "http://localhost:8983/solr/SODemo"
+                        -->
+                    <Property name="url">http://localhost:8983/solr/Dummy</Property>
+                </Properties>
+            </IndexManager>
+
+            <Security>
+                <AllowRole>Vega Unity Users</AllowRole>
+                <AllowRole>Vega Unity Admins</AllowRole>
+                <AllowRole>testers</AllowRole>
+            </Security>
+            <!-- overwrites default properties -->
+            <Properties>
+                <!-- property names values are not case sensitive -->
+                <Property name="timeToLiveSeconds" >140</Property>
+            </Properties>
+        </IndexGroup>
+    </IndexGroups>
+    <!-- Default properties -->
+    <Properties>
+        <!-- when solrProxyEnabled is false, all requests cached as HLI document iterators, it may save time when deep paging performance is important
+         Default value true-->
+        <Property name="solrProxyEnabled">true</Property>
+        <!-- property names values are not case sensitive -->
+        <Property name="resultBufferIncrement" >200</Property>
+        <Property name="totalQueryTimeoutMsec" >25000</Property>
+        <!--
+           cacheFactoryClass specifies ehcache factory class.
+          For Lucene, Solr 5 use com.intellective.uie.search.cache.impl.Eh2CacheManager;
+          For Solr 6 and later - com.intellective.uie.search.cache.impl.Eh3CacheManager
+          -->
+        <Property name="cacheFactoryClass" >com.intellective.uie.search.cache.impl.Eh3CacheManager</Property>
+        <Property name="hliComparatorFactoryClass" >com.intellective.uie.core.comparator.DefaultHliObjectComparatorFactory</Property>
+        <Property name="storedRequestIdsPerUser" >3</Property>
+        <!--  Use default HliComparatorFactory -->
+        <Property name="hliComparatorFactoryClass" ></Property>
+        <!--
+        configUrl specifies ehcache configuration file. For Lucene, Solr 5 EhCache v2; for Solr 6 and later - EhCache v3
+        1. When cacheFactory.configUrl value is blank or parameter is missing, default configuration created programmatically
+        2. If cacheFactory.configUrl value starts from "/", configuration loaded as WAR embedded resource ( "/ehcache.xml" value means that ehcache.xmk located in /WEB-INF/classes folder)
+        3. Finally, cacheFactory.configUrl handled as URL (example: file:///opt/uie/cache/ehcache.xml )
+        -->
+        <Property name="cacheFactory.configUrl" ></Property>
+        <!-- 	When cacheFactory.configUrl is not blank and configuration loaded from external config file, cacheFactory.* properties below ignored -->
+        <Property name="cacheFactory.diskStorePath" ></Property><!-- using system property java.io.tmpdir when blank value -->
+        <Property name="cacheFactory.maxBytesLocalHeap" >8768000</Property>
+        <Property name="cacheFactory.maxEntriesLocalHeap" >1000</Property> <!-- Please note: the 'cacheFactory.maxEntriesLocalHeap' value is ignored if the 'cacheFactory.maxBytesLocalHeap' is specified. -->
+        <Property name="cacheFactory.maxBytesLocalDisk" >-1</Property>     <!-- disk caching disabled -->
+        <Property name="cacheFactory.memoryStoreEvictionPolicy" >LRU</Property>
+        <Property name="cacheFactory.timeToIdleSeconds" >120</Property>
+        <Property name="cacheFactory.timeToLiveSeconds" >120</Property>
+        <Property name="timeToLiveSeconds" >120</Property>
+        <!-- How many documents to fetch (minimum count) when JOIN or Distinct detected in search condition -->
+        <Property name="prefetchDocumentCount" >500</Property>
+        <!-- HLI query from/to document id range size limit. Default value 1000 -->
+        <Property name="resultMaxDocumentCount" >5000</Property>
+        <Property name="defaultIndexGroup" >TNTarget</Property>
+    </Properties>
+</SearcherConfiguration>

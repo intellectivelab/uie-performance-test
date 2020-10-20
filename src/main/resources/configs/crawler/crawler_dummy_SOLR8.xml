@@ -1,0 +1,315 @@
+<IndexConfiguration>
+	<ContextFactory>
+        <ClassName>com.intellective.uie.index.solr8.Solr8RuntimeContextFactory</ClassName>
+    </ContextFactory>
+
+    <IndexManager>
+        <Properties>
+            <Property name="url">http://localhost:8983/solr/Dummy/</Property>
+        </Properties>
+    </IndexManager>
+
+    <!-- supported AgentLockPersistence types: FS, RAM, JDBC -->
+    <AgentLockPersistence type="FS">
+        <Properties>
+            <!-- agent locks will be stored in FS folder -->
+            <Property name="folderPath">*****PUt***lock FOLDER PATH HERE ***************</Property>
+        </Properties>
+    </AgentLockPersistence>
+
+    <Maintenance>
+    </Maintenance>
+
+	<CrawlAgent ID="DummySTI" autostart="false">
+		<ClassName>CrawlAgent</ClassName>
+		<Properties>
+			<!-- property names and values are not case sensitive "sleepAfterErrorSec" 
+				parameter specifies sleep interval after error in repository; default is 
+				10 sec this parameter value must be positive or equals 0 (no sleep) -->
+			<Property name="sleepAfterErrorSec">10</Property>
+			<!-- "commitIntervalSec" specifies Lucene commit interval - how frequently 
+				Lucene index updates committed from RAM buffer into index. -->
+			<Property name="commitIntervalSec">60</Property>
+			<!-- "repositoryCycleDelayMsec" specifies sleep interval in msec when 
+				repository worker returned documents. Default value is 50 msec. When set 
+				to 0, no sleep. -->
+			<Property name="repositoryCycleDelayMsec">50</Property>
+			<!-- "repositoryCycleIdleDelayMsec" specifies sleep interval in msec when 
+				no documents returned by repository worker. worker. Default value is 500 
+				msec. When set to 0, no sleep. -->
+			<Property name="repositoryCycleIdleDelayMsec">50</Property>
+			<!-- "repositoryErrorTimeoutMsec" specifies sleep interval in msec when 
+				error returned by repository worker. worker. Default value is 15000 msec. 
+				When set to 0, no sleep. -->
+			<Property name="repositoryErrorTimeoutMsec">500</Property>
+			<!-- "indexMaxDocCountLimit" specifies maximum heap index size, default 
+				value is 15000000 (15 mln) -->
+			<!-- "repositoryProgressIntervalMsec" defines repository progress bar update interval
+                Default value 5000 msec, increase it for large or slow repositories where repository
+                total document count call takes significant time.
+		     -->
+			<Property name="repositoryProgressIntervalMsec">10000</Property>
+			<Property name="indexMaxDocCountLimit">15000</Property>
+			<!-- "archiveMaxDocCountLimit" specifies maximum archive index size, default 
+				value is 250000000 (250 mln) for indices 50-100 mln documents, it make sense 
+				to use 20-30 mln documents archives and 5-10 mln documents heaps -->
+			<Property name="archiveMaxDocCountLimit">500000</Property>
+			<!-- "segmentMaxDocCountLimit" specifies how may documents will be stored 
+				in one segment in archive index. This parameter is used by index optimization 
+				during maintenance, archive folders will have "archive doc count" / "segmentMaxDocCountLimit" 
+				segments after arhive index optimization. We should limit max segment size 
+				to make OS file system cache more efficient when working with archive indices. 
+				By default, this parameter equals indexMaxDocCountLimit. -->
+			<Property name="segmentMaxDocCountLimit">5000</Property>
+			<!-- "ramBufferSizeMB" parameter specifies RAM buffer size in megabytes. 
+				Default value is 256 MB. -1 value is no limit. -->
+			<Property name="ramBufferSizeMB">128</Property>
+			<!-- "maxBufferedDocs" RAM buffered document count limit before documents 
+				will be flashed to disk. Default value is -1 (no limit) -->
+			<Property name="maxBufferedDocs">-1</Property>
+			<!-- "maxBufferedDeleteDocs" RAM buffered deleted document count limit 
+				before deleted documents will be flashed to disk. Default value is -1 (no 
+				limit) -->
+			<Property name="maxBufferedDeleteDocs">-1</Property>
+			<!-- To start crawl agent automatically, default value is true -->
+			<Property name="autostart">false</Property>
+		</Properties>
+		<CrawlPlans>
+			<!-- 
+			   rename CrawlPlan to WorkSchedule?
+			 -->
+			<CrawlPlan ID="Maintenance">
+				<Schedule>
+					<Time from="20:00" to="21:00" />
+					<Time from="22:00" to="05:59" />
+					<DayOfWeek pattern="1-5" />
+				</Schedule>
+				<Schedule>
+					<Time from="00:00" to="23:59" />
+					<DayOfWeek pattern="6-7" />
+				</Schedule>
+			</CrawlPlan>
+
+			<CrawlPlan ID="CPL">
+				<Schedule>
+					<Time from="0:00" to="23:59" />
+					<DayOfWeek pattern="1-7" />
+				</Schedule>
+			</CrawlPlan>
+		</CrawlPlans>
+	</CrawlAgent>
+
+	<!-- list of repositories -->
+	<Repositories>
+		<Repository ID="AbstractDummyRepo">
+			<ClassName>com.intellective.uie.crawl.dummy.DummyRepository</ClassName>
+			<RepositoryPlugins>
+				<RepositoryPlugin ID="DummyRepoPlugin">
+					<ClassName>com.intellective.uie.crawl.dummy.chubb.ChubbDummyRepositoryPlugin</ClassName>
+					<CrawlPlanID>CPL</CrawlPlanID>
+					<DocumentCountLimit>4300000000</DocumentCountLimit>
+				</RepositoryPlugin>
+			</RepositoryPlugins>
+		</Repository>
+
+		<Repository ID="DummyRepo1" REFID="AbstractDummyRepo">
+		</Repository>
+
+		<Repository ID="DummyRepo2" REFID="AbstractDummyRepo">
+		</Repository>
+
+		<Repository ID="DummyRepo3" REFID="AbstractDummyRepo">
+		</Repository>
+
+		<Repository ID="DummyRepo4" REFID="AbstractDummy">
+		</Repository>
+	</Repositories>
+
+	<MimeTypes>
+		<MimeType ID="MsExcel">
+			<Name>application/excel</Name>
+			<Name>application/vnd.ms-excel</Name>
+			<Extension>xls</Extension>
+			<Description>Microsoft Excel</Description>
+			<Icon>images/mime/Xls</Icon>
+		</MimeType>
+		<MimeType ID="MsPowerPoint">
+			<Name>application/mspowerpoint</Name>
+			<Name>application/vnd.ms-powerpoint</Name>
+			<Extension>ppt</Extension>
+			<Description>Microsoft Powerpoint</Description>
+			<Icon>images/mime/Ppt</Icon>
+		</MimeType>
+		<MimeType ID="MsWord">
+			<Name>application/msword</Name>
+			<Extension>doc</Extension>
+			<Description>Microsoft Word</Description>
+			<Icon>images/mime/Doc</Icon>
+		</MimeType>
+		<MimeType ID="MsVisio">
+			<Name>application/msvisio</Name>
+			<Name>application/vnd.visio</Name>
+			<Extension>vsd</Extension>
+			<Description>Microsoft Visio</Description>
+			<Icon>images/mime/Vsd</Icon>
+		</MimeType>
+		<MimeType ID="MsOutlook">
+			<Name>application/virtual-msoutlook</Name>
+			<Name>application/virtual-vnd.ms-outlook</Name>
+			<Extension>msg</Extension>
+			<Description>Microsoft Outlook</Description>
+			<Icon>images/mime/Msg</Icon>
+		</MimeType>
+		<MimeType ID="MsProject">
+			<Name>application/vnd.ms-project</Name>
+			<Extension>mpp</Extension>
+			<Description>MS Project</Description>
+		</MimeType>
+		<MimeType ID="MsPowerPointX">
+			<Name>application/vnd.openxmlformats-officedocument.presentationml.presentation
+			</Name>
+			<Extension>pptx</Extension>
+			<Description>Microsoft Powerpoint 2007</Description>
+			<Icon>images/mime/Ppt</Icon>
+		</MimeType>
+		<MimeType ID="MsWordX">
+			<Name>application/vnd.openxmlformats-officedocument.wordprocessingml.document
+			</Name>
+			<Extension>docx</Extension>
+			<Description>Microsoft Word 2007</Description>
+			<Icon>images/mime/Doc</Icon>
+		</MimeType>
+		<MimeType ID="MsExcelX">
+			<Name>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+			</Name>
+			<Extension>xlsx</Extension>
+			<Description>Microsoft Excel 2007</Description>
+			<Icon>images/mime/Xls</Icon>
+		</MimeType>
+		<MimeType ID="PDF">
+			<Name>application/pdf</Name>
+			<Extension>pdf</Extension>
+			<Description>Adobe Acrobat</Description>
+			<Icon>images/mime/Pdf</Icon>
+		</MimeType>
+		<MimeType ID="RTF">
+			<Name>application/rtf</Name>
+			<Name>text/richtext</Name>
+			<Extension>rtf</Extension>
+			<Extension>rtx</Extension>
+			<Description>Rich Text File</Description>
+		</MimeType>
+		<MimeType ID="WordPerfect">
+			<Name>application/wordperfect</Name>
+			<Name>application/wordperfectd</Name>
+			<Extension>wp</Extension>
+			<Extension>wpd</Extension>
+			<Description>WordPerfect</Description>
+		</MimeType>
+		<MimeType ID="WordPerfect5.1">
+			<Name>application/wordperfect5.1</Name>
+			<Extension>wp5</Extension>
+			<Description>WordPerfect Version 5.1</Description>
+		</MimeType>
+		<MimeType ID="WordPerfect6.1">
+			<Name>application/wordperfect6.1</Name>
+			<Extension>wp6</Extension>
+			<Description>WordPerfect Version 6.1</Description>
+		</MimeType>
+		<MimeType ID="HTML">
+			<Name>text/html</Name>
+			<Extension>html</Extension>
+			<Extension>htm</Extension>
+			<Description>HTML Document</Description>
+			<Icon>images/mime/Htm</Icon>
+		</MimeType>
+		<MimeType ID="Text">
+			<Name>text/plain</Name>
+			<Extension>txt</Extension>
+			<Extension>ini</Extension>
+			<Extension>log</Extension>
+			<Extension>cfg</Extension>
+			<Extension>m4</Extension>
+			<Extension>sh</Extension>
+			<Description>Plain Text File</Description>
+			<Icon>images/mime/Txt</Icon>
+		</MimeType>
+		<MimeType ID="TSV">
+			<Name>text/tab-separated-values</Name>
+			<Extension>tsv</Extension>
+		</MimeType>
+		<MimeType ID="XML">
+			<Name>text/xml</Name>
+			<Name>application/xml</Name>
+			<Extension>xml</Extension>
+			<Description>XML document</Description>
+			<Icon>images/mime/Xml</Icon>
+		</MimeType>
+		<MimeType ID="TIFF">
+			<Name>image/tiff</Name>
+			<Name>image/x-tiff</Name>
+			<Extension>tif</Extension>
+			<Extension>tiff</Extension>
+			<Description>Tiff Formats</Description>
+			<Icon>images/mime/Tif</Icon>
+		</MimeType>
+		<MimeType ID="Graphic">
+			<Name>image/mo:dca</Name>
+			<Name>image/pt:oca</Name>
+			<Name>image/jpeg</Name>
+			<Name>image/gif</Name>
+			<Name>image/bmp</Name>
+			<Name>image/x-windows-bmp</Name>
+			<Name>image/tiff</Name>
+			<Name>image/x-tiff</Name>
+			<Name>image/png</Name>
+			<Extension>jpeg</Extension>
+			<Extension>tif</Extension>
+			<Extension>tiff</Extension>
+			<Extension>jpeg</Extension>
+			<Extension>jpg</Extension>
+			<Extension>png</Extension>
+			<Extension>bmp</Extension>
+			<Extension>gif</Extension>
+			<Description>Graphical Formats</Description>
+			<Icon>images/mime/Graphical</Icon>
+		</MimeType>
+	</MimeTypes>
+
+	<TextExtractors>
+		<TextExtractor>
+			<MimeType>Text</MimeType>
+			<ClassName>com.intellective.uie.text.extractors.PlainExtractor</ClassName>
+		</TextExtractor>
+		<TextExtractor>
+			<MimeType>PDF</MimeType>
+			<ClassName>com.intellective.uie.text.extractors.PDFExtractor</ClassName>
+		</TextExtractor>
+		<TextExtractor>
+			<MimeType>MsWord</MimeType>
+			<MimeType>MsPowerPoint</MimeType>
+			<MimeType>MsVisio</MimeType>
+			<MimeType>MsExcel</MimeType>
+			<ClassName>com.intellective.uie.text.extractors.POIExtractor</ClassName>
+		</TextExtractor>
+		<TextExtractor>
+			<MimeType>MsWordX</MimeType>
+			<MimeType>MsPowerPointX</MimeType>
+			<MimeType>MsExcelX</MimeType>
+			<ClassName>com.intellective.uie.text.extractors.OpenXMLExtractor
+			</ClassName>
+		</TextExtractor>
+		<TextExtractor>
+			<MimeType>XML</MimeType>
+			<ClassName>com.intellective.uie.text.extractors.XMLExtractor</ClassName>
+		</TextExtractor>
+		<TextExtractor>
+			<MimeType>HTML</MimeType>
+			<ClassName>com.intellective.uie.text.extractors.HTMLExtractor</ClassName>
+		</TextExtractor>
+		<TextExtractor>
+			<MimeType>MsOutlook</MimeType>
+			<ClassName>com.intellective.uie.text.extractors.HTMLExtractor</ClassName>
+		</TextExtractor>
+	</TextExtractors>
+</IndexConfiguration>

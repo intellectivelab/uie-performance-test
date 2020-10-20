@@ -16,7 +16,7 @@ goto :EOF
 if not exist logs md logs
 
 :ID
-"%JAVA_HOME%\bin\java" -Xmx3072m -XX:MaxGCPauseMillis=200 -XX:+UseG1GC-jar uie-performance-test.jar
+"%JAVA_HOME%\bin\java" -Xmx3072m -XX:MaxGCPauseMillis=200 -XX:+UseG1GC -jar uie-performance-test.jar
 goto EOF
 
 

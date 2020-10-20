@@ -100,9 +100,6 @@
 			<resource>
 				<filtering>true</filtering>
 				<directory>src/main/resources</directory>
-				<excludes>
-					<exclude>logback.xml</exclude>
-				</excludes>
 			</resource>
 		</resources>
 		<extensions>
@@ -418,62 +415,31 @@
 
 	<repositories>
 		<repository>
-			<id>vegaecm-thirdparty-repo</id>
-			<url>https://nexus.vegaecm.com/content/repositories/thirdparty</url>
+			<id>maven.intellective.com</id>
+			<url>https://maven.intellective.com/repository/maven-public/</url>
 			<releases>
+				<enabled>true</enabled>
 				<checksumPolicy>fail</checksumPolicy>
 			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>vegaecm-central-repo</id>
-			<url>https://nexus.vegaecm.com/content/repositories/central</url>
-			<releases>
-				<checksumPolicy>fail</checksumPolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>product-releases-repo</id>
-			<url>https://nexus.vegaecm.com/content/repositories/Product.Releases</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>fail</checksumPolicy>
-			</releases>
-		</repository>
-		<repository>
-			<id>product-snapshots-repo</id>
-			<url>https://nexus.vegaecm.com/content/repositories/Product.Snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-				<checksumPolicy>fail</checksumPolicy>
-			</releases>
 		</repository>
 	</repositories>
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>central</id>
-			<url>https://nexus.vegaecm.com/content/repositories/central</url>
+			<id>maven.intellective.com</id>
+			<url>https://maven.intellective.com/repository/maven-public/</url>
 			<releases>
 				<enabled>true</enabled>
 				<checksumPolicy>fail</checksumPolicy>
 			</releases>
 			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
 		</pluginRepository>
@@ -482,15 +448,18 @@
 
 	<!-- Nexus deployment configuration -->
 	<distributionManagement>
+		<site>
+			<id>local-site</id>
+			<name>Deployment to local folder</name>
+			<url>file://site/${project.version}</url>
+		</site>
 		<repository>
-			<id>product-releases-repo</id>
-			<name>Internal Releases</name>
-			<url>https://nexus.vegaecm.com/content/repositories/Product.Releases/</url>
+			<id>maven.intellective.com</id>
+			<url>https://maven.intellective.com/repository/maven-releases/</url>
 		</repository>
 		<snapshotRepository>
-			<id>product-snapshots-repo</id>
-			<name>Internal Snapshots</name>
-			<url>https://nexus.vegaecm.com/content/repositories/Product.Snapshots/</url>
+			<id>maven.intellective.com</id>
+			<url>https://maven.intellective.com/repository/maven-snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -515,7 +484,7 @@
 		<dependency>
 			<groupId>com.intellective.uie.index</groupId>
 			<artifactId>uie-search-client</artifactId>
-			<version>7.6.0.1</version>
+			<version>7.7.1-RC1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
